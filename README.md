@@ -10,6 +10,6 @@ Step 2 -- Detect face area in the picture, and give an average prediction.
 Step 3 -- Gradient descent.  
   
 __Demo__  
-![demo](https://github.com/htkseason/AamFitting/blob/master/demo.jpg)  
+![demo](https://github.com/htkseason/AAM-Fitting/blob/master/demo.jpg)  
   
 reference [Cootes and C.J.Taylor. Statistical Models of Appearance for Computer Vision. University of Manchester, March 2004]

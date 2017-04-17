@@ -51,7 +51,6 @@ public final class Entrance {
 		ShapeModel.init("models/shape/", "V", "Z_e");
 		// TextureModelTrain.train("models/texture/", 0.98, 20, 30, false);
 		TextureModel.init("models/texture/", "U", "X_mean", "Z_e", "meanShape", "delaunay");
-		// TextureModelTrain.visualize();
 		// AppearanceModelTrain.train("models/appearance/", 0.98, false);
 		AppearanceModel.init("models/appearance/", "U", "Z_e", "shapeWeight");
 
@@ -74,9 +73,11 @@ public final class Entrance {
 
 		pic.copyTo(v_pic);
 		app.printTo(v_pic);
+		
 
 		double preCost = Double.MAX_VALUE;
 		JFrame win = new JFrame();
+
 		for (int iter = 0; iter < 1000; iter++) {
 			System.out.println("iter=" + iter + "\t\tcost=" + (int) ImUtils.getCostE(app.getCost()) + "\t\ttime="
 					+ (int) ImUtils.getTiming() + " ms");
@@ -85,6 +86,7 @@ public final class Entrance {
 			ImUtils.startTiming();
 			System.gc();
 			Mat gra = app.getGradient();
+
 			double descentRate = 1;
 			while (descentRate > 0.05) {
 				Mat step = new Mat();
@@ -100,6 +102,7 @@ public final class Entrance {
 				}
 			}
 
+	
 			pic.copyTo(v_pic);
 			app.printTo(v_pic);
 

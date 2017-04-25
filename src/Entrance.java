@@ -45,13 +45,13 @@ public final class Entrance {
 	public static void aamFittingDemo() {
 		System.out.println("parallel threads : " + Runtime.getRuntime().availableProcessors());
 		FaceDetector.init("lbpcascade_frontalface.xml");
-		//MuctData.init("e:/muct/jpg", "e:/muct/muct76-opencv.csv", false);
+		MuctData.init("e:/muct/jpg", "e:/muct/muct76-opencv.csv", MuctData.default_ignore);
 
-		// ShapeModelTrain.train("models/shape/", 0.90, false);
+		//ShapeModelTrain.train("models/shape/", 0.95, false);
 		ShapeModel.init("models/shape/", "V", "Z_e");
 		// TextureModelTrain.train("models/texture/", 0.98, 20, 30, false);
 		TextureModel.init("models/texture/", "U", "X_mean", "Z_e", "meanShape", "delaunay");
-		// AppearanceModelTrain.train("models/appearance/", 0.98, false);
+		//AppearanceModelTrain.train("models/appearance/", 0.98, false);
 		AppearanceModel.init("models/appearance/", "U", "Z_e", "shapeWeight");
 
 		ImUtils.startTiming();

@@ -47,15 +47,16 @@ public final class Entrance {
 		FaceDetector.init("lbpcascade_frontalface.xml");
 		MuctData.init("e:/muct/jpg", "e:/muct/muct76-opencv.csv", MuctData.default_ignore);
 
-		//ShapeModelTrain.train("models/shape/", 0.95, false);
-		ShapeModel.init("models/shape/", "V", "Z_e");
+		// ShapeModelTrain.train("models/shape/", 0.90, false);
+		ShapeModel sm = ShapeModel.load("models/shape/", "V", "Z_e");
 		// TextureModelTrain.train("models/texture/", 0.98, 20, 30, false);
-		TextureModel.init("models/texture/", "U", "X_mean", "Z_e", "meanShape", "delaunay");
-		//AppearanceModelTrain.train("models/appearance/", 0.98, false);
-		AppearanceModel.init("models/appearance/", "U", "Z_e", "shapeWeight");
+		TextureModel tm = TextureModel.load("models/texture/", "U", "X_mean", "Z_e", "meanShape", "delaunay");
+
+		//AppearanceModelTrain.train(sm, tm, "models/appearance/", 1.5, 0.98, false);
+		AppearanceModel am = AppearanceModel.load(sm, tm, "models/appearance/", "U", "Z_e", "shapeWeight");
 
 		ImUtils.startTiming();
-		//Mat pic = MuctData.getGrayJpg(0);
+		// Mat pic = MuctData.getGrayJpg(0);
 
 		Mat pic = Imgcodecs.imread("test.jpg", Imgcodecs.IMREAD_GRAYSCALE);
 
@@ -65,20 +66,25 @@ public final class Entrance {
 		pic.convertTo(pic, CvType.CV_32F);
 		Mat v_pic = new Mat(pic.size(), pic.type());
 
-		TextureInstance texture = new TextureInstance();
-		ShapeInstance shape = new ShapeInstance(faceRect.width * 0.9, 0, faceRect.x + faceRect.width / 2,
+		TextureInstance texture = new TextureInstance(tm);
+		// texture.setFromPic(pic, MuctData.getPtsMat(0));
+		ShapeInstance shape = new ShapeInstance(sm);
+
+		shape.setFromParams(faceRect.width * 0.9, 0, faceRect.x + faceRect.width / 2,
 				faceRect.y + faceRect.height / 2 + faceRect.height * 0.12);
 
-		AppearanceFitting app = new AppearanceFitting(pic, shape.getZ(), texture.getZ());
+		AppearanceFitting app = new AppearanceFitting(am, pic);
+		app.setFromModels(shape.getZ(), texture.getZ());
 
-		pic.copyTo(v_pic);
-		app.printTo(v_pic);
-		
+
 
 		double preCost = Double.MAX_VALUE;
 		JFrame win = new JFrame();
 
 		for (int iter = 0; iter < 1000; iter++) {
+			pic.copyTo(v_pic);
+			app.printTo(v_pic, false);
+			
 			System.out.println("iter=" + iter + "\t\tcost=" + (int) ImUtils.getCostE(app.getCost()) + "\t\ttime="
 					+ (int) ImUtils.getTiming() + " ms");
 			ImUtils.imshow(win, v_pic, 1);
@@ -101,10 +107,12 @@ public final class Entrance {
 					preCost = cost;
 				}
 			}
+			
+			Mat appShapeZ = app.getShapeZ();
+			Mat appTextureZ = app.getTextureZ();
+			app.getAppearanceModel().getShapeModel().clamp(appShapeZ, 3);
+			app.setFromModels(appShapeZ, appTextureZ);
 
-	
-			pic.copyTo(v_pic);
-			app.printTo(v_pic);
 
 		}
 

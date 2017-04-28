@@ -44,7 +44,7 @@ public final class Entrance {
 
 	public static void aamFittingDemo() {
 		System.out.println("parallel threads : " + Runtime.getRuntime().availableProcessors());
-		FaceDetector.init("lbpcascade_frontalface.xml");
+		FaceDetector fd = FaceDetector.load("lbpcascade_frontalface.xml");
 		MuctData.init("e:/muct/jpg", "e:/muct/muct76-opencv.csv", MuctData.default_ignore);
 
 		// ShapeModelTrain.train("models/shape/", 0.90, false);
@@ -60,7 +60,7 @@ public final class Entrance {
 
 		Mat pic = Imgcodecs.imread("test.jpg", Imgcodecs.IMREAD_GRAYSCALE);
 
-		Rect faceRect = FaceDetector.searchFace(pic);
+		Rect faceRect = fd.searchFace(pic);
 
 		ImUtils.imshow(pic);
 		pic.convertTo(pic, CvType.CV_32F);

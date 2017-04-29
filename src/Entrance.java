@@ -44,7 +44,7 @@ public final class Entrance {
 
 	public static void aamFittingDemo() {
 		System.out.println("parallel threads : " + Runtime.getRuntime().availableProcessors());
-		FaceDetector fd = FaceDetector.load("lbpcascade_frontalface.xml");
+		FaceDetector fd = FaceDetector.load("models/lbpcascade_frontalface.xml");
 		MuctData.init("e:/muct/jpg", "e:/muct/muct76-opencv.csv", MuctData.default_ignore);
 
 		// ShapeModelTrain.train("models/shape/", 0.90, false);
@@ -52,7 +52,8 @@ public final class Entrance {
 		// TextureModelTrain.train("models/texture/", 0.98, 20, 30, false);
 		TextureModel tm = TextureModel.load("models/texture/", "U", "X_mean", "Z_e", "meanShape", "delaunay");
 
-		//AppearanceModelTrain.train(sm, tm, "models/appearance/", 1.5, 0.98, false);
+		// AppearanceModelTrain.train(sm, tm, "models/appearance/", 1.5, 0.98,
+		// false);
 		AppearanceModel am = AppearanceModel.load(sm, tm, "models/appearance/", "U", "Z_e", "shapeWeight");
 
 		ImUtils.startTiming();
@@ -60,7 +61,7 @@ public final class Entrance {
 
 		Mat pic = Imgcodecs.imread("test.jpg", Imgcodecs.IMREAD_GRAYSCALE);
 
-		Rect faceRect = fd.searchFace(pic);
+		Rect faceRect = fd.searchFace(pic).get(0);
 
 		ImUtils.imshow(pic);
 		pic.convertTo(pic, CvType.CV_32F);
@@ -76,15 +77,16 @@ public final class Entrance {
 		AppearanceFitting app = new AppearanceFitting(am, pic);
 		app.setFromModels(shape.getZ(), texture.getZ());
 
-
-
 		double preCost = Double.MAX_VALUE;
 		JFrame win = new JFrame();
 
 		for (int iter = 0; iter < 1000; iter++) {
 			pic.copyTo(v_pic);
 			app.printTo(v_pic, false);
-			
+			shape.setFromPts(sm.getXfromZ(app.getShapeZ()));
+			Rect r = shape.getLocation();
+			Imgproc.rectangle(v_pic, r.tl(), r.br(), new Scalar(255), 2);
+
 			System.out.println("iter=" + iter + "\t\tcost=" + (int) ImUtils.getCostE(app.getCost()) + "\t\ttime="
 					+ (int) ImUtils.getTiming() + " ms");
 			ImUtils.imshow(win, v_pic, 1);
@@ -107,12 +109,11 @@ public final class Entrance {
 					preCost = cost;
 				}
 			}
-			
+
 			Mat appShapeZ = app.getShapeZ();
 			Mat appTextureZ = app.getTextureZ();
 			app.getAppearanceModel().getShapeModel().clamp(appShapeZ, 3);
 			app.setFromModels(appShapeZ, appTextureZ);
-
 
 		}
 

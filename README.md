@@ -1,5 +1,5 @@
 # AAM-Fitting  
-AAM, active appearance model, fitting algrithom.   
+AAM, active appearance model, fitting algrithom. (Including trianing kits)   
 Before using this project, __VisionModelLib meant to be included to classpath__. It can be found in my repositories.  
   
 ----  

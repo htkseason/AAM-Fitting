@@ -1,13 +1,13 @@
 # AAM-Fitting  
-Using Vision-Model-Lib to apply an AAM algorithm.  
-Before using this project, you should __include VisionModelLib to classpath first__. It can be found in my repositories.  
+AAM, active appearance model, fitting algrithom.   
+Before using this project, __VisionModelLib meant to be included to classpath__. It can be found in my repositories.  
   
 ----  
   
 __WorkFlow__  
 Step 1 -- Train Shape-Model, Texture-Model and Appearance-Model (pre-trained models are included in 'models')  
 Step 2 -- Detect face area in the picture, and give an average prediction.  
-Step 3 -- Gradient descent.  
+Step 3 -- Estimate loss and gradient, descent with momentum.  
   
 __Demo__  
 ![demo](https://github.com/htkseason/AAM-Fitting/blob/master/demo.jpg)  

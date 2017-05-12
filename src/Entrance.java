@@ -9,6 +9,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
+import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -62,7 +63,7 @@ public final class Entrance {
 		Mat pic = Imgcodecs.imread("test.jpg", Imgcodecs.IMREAD_GRAYSCALE);
 
 		Rect[] faceRects = fd.searchFace(pic);
-		if (faceRects.length == 0){
+		if (faceRects.length == 0) {
 			System.out.println("found no face");
 			return;
 		}
@@ -89,8 +90,8 @@ public final class Entrance {
 			pic.copyTo(v_pic);
 			app.printTo(v_pic, false);
 			shape.setFromPts(sm.getXfromZ(app.getShapeZ()));
-			Rect r = shape.getLocation();
-			Imgproc.rectangle(v_pic, r.tl(), r.br(), new Scalar(255), 2);
+			RotatedRect roRect = shape.getLocation();
+			ImUtils.drawRotatedRect(v_pic, roRect, 2);
 
 			System.out.println("iter=" + iter + "\t\tcost=" + (int) ImUtils.getCostE(app.getCost()) + "\t\ttime="
 					+ (int) ImUtils.getTiming() + " ms");

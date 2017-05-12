@@ -61,7 +61,12 @@ public final class Entrance {
 
 		Mat pic = Imgcodecs.imread("test.jpg", Imgcodecs.IMREAD_GRAYSCALE);
 
-		Rect faceRect = fd.searchFace(pic).get(0);
+		Rect[] faceRects = fd.searchFace(pic);
+		if (faceRects.length == 0){
+			System.out.println("found no face");
+			return;
+		}
+		Rect faceRect = faceRects[0];
 
 		ImUtils.imshow(pic);
 		pic.convertTo(pic, CvType.CV_32F);

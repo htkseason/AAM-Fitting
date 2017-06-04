@@ -1,6 +1,6 @@
 # AAM-Fitting  
 AAM, active appearance model, fitting algrithom. (Include trianing kits)   
-Before using this project, __VisionModelLib meant to be included to classpath__. It can be found in my repositories.  
+This project is based on [VisionModelLib](https://github.com/htkseason/VisionModelLib) and [OpenCV 3.2.0](http://opencv.org/releases.html).  
   
 ----  
   

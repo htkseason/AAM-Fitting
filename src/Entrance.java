@@ -58,7 +58,7 @@ public final class Entrance {
 		AppearanceModel am = AppearanceModel.load(sm, tm, "models/appearance/", "U", "Z_e", "shapeWeight");
 
 		ImUtils.startTiming();
-		// Mat pic = MuctData.getGrayJpg(0);
+		//Mat pic = MuctData.getGrayJpg(555);
 
 		Mat pic = Imgcodecs.imread("test.jpg", Imgcodecs.IMREAD_GRAYSCALE);
 
@@ -87,26 +87,27 @@ public final class Entrance {
 		JFrame win = new JFrame();
 
 		for (int iter = 0; iter < 1000; iter++) {
-			pic.copyTo(v_pic);
-			app.printTo(v_pic, false);
-			shape.setFromPts(sm.getXfromZ(app.getShapeZ()));
-			RotatedRect roRect = shape.getLocation();
-			ImUtils.drawRotatedRect(v_pic, roRect, 2);
 
-			System.out.println("iter=" + iter + "\t\tcost=" + (int) ImUtils.getCostE(app.getCost()) + "\t\ttime="
+			pic.copyTo(v_pic);
+
+			app.printTo(v_pic, false);
+			
+			// shape.setFromPts(sm.getXfromZ(app.getShapeZ()));
+			// RotatedRect roRect = shape.getLocation();
+			// ImUtils.drawRotatedRect(v_pic, roRect, 2);
+
+			System.out.println("iter=" + iter + "\t\tcost=" + (int) getCostE(app.getCost()) + "\t\ttime="
 					+ (int) ImUtils.getTiming() + " ms");
 			ImUtils.imshow(win, v_pic, 1);
 
 			ImUtils.startTiming();
-			System.gc();
-			Mat gra = app.getGradient();
-
+			Mat gra =  app.getGradient();
 			double descentRate = 1;
 			while (descentRate > 0.05) {
 				Mat step = new Mat();
 				Core.multiply(gra, new Scalar(descentRate), step);
 				app.updata(step);
-				double cost = ImUtils.getCostE(app.getCost());
+				double cost = getCostE(app.getCost());
 				if (preCost < cost) {
 					Core.multiply(step, new Scalar(-1), step);
 					app.updata(step);
@@ -114,17 +115,25 @@ public final class Entrance {
 				} else {
 					preCost = cost;
 				}
-			}
+			
+}
 
 			Mat appShapeZ = app.getShapeZ();
 			Mat appTextureZ = app.getTextureZ();
 			app.getAppearanceModel().getShapeModel().clamp(appShapeZ, 3);
-			app.setFromModels(appShapeZ, appTextureZ);
+			app.setFromModels(appShapeZ, appTextureZ);			
 
+			System.gc();
 		}
 
 		System.out.println("\ndone!");
 
+	}
+
+	public static double getCostE(Mat cost) {
+		Mat result = new Mat();
+		Core.gemm(cost.t(), cost, 1, new Mat(), 0, result);
+		return result.get(0, 0)[0];
 	}
 
 }

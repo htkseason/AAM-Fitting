@@ -11,8 +11,10 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.videoio.VideoCapture;
 
 import pers.season.vml.statistics.appearance.AppearanceFitting;
 import pers.season.vml.statistics.appearance.AppearanceModel;
@@ -35,9 +37,7 @@ public final class Entrance {
 
 	public static void main(String[] args) throws IOException {
 
-		// RegressorTrain.train();
 		aamFittingDemo();
-		// RegressorTrain.trainLineR();
 
 		System.out.println("program ended.");
 
@@ -50,17 +50,18 @@ public final class Entrance {
 
 		// ShapeModelTrain.train("models/shape/", 0.90, false);
 		ShapeModel sm = ShapeModel.load("models/shape/", "V", "Z_e");
+
 		// TextureModelTrain.train("models/texture/", 0.98, 20, 30, false);
 		TextureModel tm = TextureModel.load("models/texture/", "U", "X_mean", "Z_e", "meanShape", "delaunay");
 
 		// AppearanceModelTrain.train(sm, tm, "models/appearance/", 1.5, 0.98,
 		// false);
 		AppearanceModel am = AppearanceModel.load(sm, tm, "models/appearance/", "U", "Z_e", "shapeWeight");
+		// AppearanceModelTrain.visualize(am);
 
 		ImUtils.startTiming();
-		//Mat pic = MuctData.getGrayJpg(555);
-
-		Mat pic = Imgcodecs.imread("test.jpg", Imgcodecs.IMREAD_GRAYSCALE);
+		//Mat pic = MuctData.getGrayJpg(888);
+		 Mat pic = Imgcodecs.imread("test.jpg", Imgcodecs.IMREAD_GRAYSCALE);
 
 		Rect[] faceRects = fd.searchFace(pic);
 		if (faceRects.length == 0) {
@@ -77,8 +78,8 @@ public final class Entrance {
 		// texture.setFromPic(pic, MuctData.getPtsMat(0));
 		ShapeInstance shape = new ShapeInstance(sm);
 
-		shape.setFromParams(faceRect.width * 0.9, 0, faceRect.x + faceRect.width / 2,
-				faceRect.y + faceRect.height / 2 + faceRect.height * 0.12);
+		shape.setFromParams(faceRect.width * 0.85, 0, faceRect.x + faceRect.width / 2,
+				faceRect.y + faceRect.height / 2 + faceRect.height * 0.07);
 
 		AppearanceFitting app = new AppearanceFitting(am, pic);
 		app.setFromModels(shape.getZ(), texture.getZ());
@@ -91,7 +92,7 @@ public final class Entrance {
 			pic.copyTo(v_pic);
 
 			app.printTo(v_pic, false);
-			
+
 			// shape.setFromPts(sm.getXfromZ(app.getShapeZ()));
 			// RotatedRect roRect = shape.getLocation();
 			// ImUtils.drawRotatedRect(v_pic, roRect, 2);
@@ -101,7 +102,7 @@ public final class Entrance {
 			ImUtils.imshow(win, v_pic, 1);
 
 			ImUtils.startTiming();
-			Mat gra =  app.getGradient();
+			Mat gra = app.getGradient();
 			double descentRate = 1;
 			while (descentRate > 0.05) {
 				Mat step = new Mat();
@@ -115,13 +116,13 @@ public final class Entrance {
 				} else {
 					preCost = cost;
 				}
-			
-}
+
+			}
 
 			Mat appShapeZ = app.getShapeZ();
 			Mat appTextureZ = app.getTextureZ();
 			app.getAppearanceModel().getShapeModel().clamp(appShapeZ, 3);
-			app.setFromModels(appShapeZ, appTextureZ);			
+			app.setFromModels(appShapeZ, appTextureZ);
 
 			System.gc();
 		}

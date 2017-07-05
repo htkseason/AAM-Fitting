@@ -10,7 +10,8 @@ Step 2 -- Detect face area in the picture, and give an average prediction.
 Step 3 -- Estimate loss and gradient, descent while estimation.  
   
 __Demo__  
-<img src="https://github.com/htkseason/AAM-Fitting/blob/master/demo.jpg" width="75%" alt="demo" />  
+<img src="https://github.com/htkseason/AAM-Fitting/blob/master/demos/demo1.jpg" width="75%"/>
+<img src="https://github.com/htkseason/AAM-Fitting/blob/master/demos/demo2.jpg" width="75%"/>    
   
 ----  
   
